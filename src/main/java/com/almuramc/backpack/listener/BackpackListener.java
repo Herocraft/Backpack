@@ -242,6 +242,7 @@ public class BackpackListener implements Listener {
 		World world = PermissionHelper.getWorldToOpen(player, player.getWorld());
 		BackpackInventory inventory = STORE.load(player, world);
 		STORE.save(player, world, inventory);
+		STORE.purge(player, world);
 		if (debug) {
 			Bukkit.getLogger().warning("[Backpack Debug] - BackpackListener.java - forceSave method called.");
 		}

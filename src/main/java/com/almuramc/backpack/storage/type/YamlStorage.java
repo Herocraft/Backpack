@@ -176,6 +176,12 @@ public class YamlStorage extends Storage {
 			e.printStackTrace();
 		}
 	}
+
+    @Override
+    public void purge(Player player, World world)
+    {
+        //Preserve cache for this storage type
+    }
 }
 
 class BackpackFilter implements FilenameFilter {

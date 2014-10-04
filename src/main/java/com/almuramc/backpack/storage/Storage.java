@@ -35,7 +35,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public abstract class Storage {
-	private static final HashMap<UUID, HashMap<UUID, BackpackInventory>> BACKPACKS = new HashMap<UUID, HashMap<UUID, BackpackInventory>>();
+	protected static final HashMap<UUID, HashMap<UUID, BackpackInventory>> BACKPACKS = new HashMap<UUID, HashMap<UUID, BackpackInventory>>();
 
 	public final void store(Player player, World world, BackpackInventory toStore) {
 		if (player == null || world == null) {
@@ -83,6 +83,8 @@ public abstract class Storage {
 	public abstract BackpackInventory load(Player player, World world);
 
 	public abstract void save(Player player, World world, BackpackInventory backpack);
+
+	public abstract void purge(Player player, World world);
 
 	public abstract void updateSize(Player player, World world, int size);
 }

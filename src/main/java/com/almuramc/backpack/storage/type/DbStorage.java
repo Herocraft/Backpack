@@ -34,7 +34,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.almuramc.backpack.BackpackPlugin;
 import com.almuramc.backpack.inventory.BackpackInventory;
 import com.almuramc.backpack.storage.Storage;
 import com.almuramc.backpack.storage.model.Backpack;
@@ -68,28 +67,31 @@ public class DbStorage extends Storage
             inventory = fetch(player, world);
         }
         else {
-            List<ItemStack> items = new ArrayList<ItemStack>();
+            int psize = PermissionHelper.getMaxSizeFor(player, world);
             Backpack backpack = database.find(Backpack.class).where().eq("player_name", player.getName()).eq("world_name", world.getName()).findUnique();
 
             if (backpack != null) {
+                int size = Math.min(psize, backpack.getContentAmount());
+                ItemStack[] items = new ItemStack[size];
+
                 for (BackpackSlot slot : backpack.getSlots()) {
+                    if (slot.getSlotNumber() >= size) {
+                        continue;
+                    }
                     try {
                         ItemStack stack = StreamSerializer.getDefault().deserializeItemStack(slot.getItemStackString());
-                        items.add(stack);
+                        items[slot.getSlotNumber()] = stack;
                     }
                     catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-    
-                int psize = PermissionHelper.getMaxSizeFor(player, world);
-                int size = backpack.getContentAmount() > psize ? psize : backpack.getContentAmount();
-    
+
                 inventory = new BackpackInventory(Bukkit.createInventory(player, size, "Backpack"));
-                inventory.setContents(items.toArray(new ItemStack[items.size()]));
+                inventory.setContents(items);
             }
             else {
-                inventory = new BackpackInventory(Bukkit.createInventory(player, BackpackPlugin.getInstance().getCached().getDefaultSize(), "Backpack"));
+                inventory = new BackpackInventory(Bukkit.createInventory(player, psize, "Backpack"));
             }
         }
 
@@ -107,7 +109,7 @@ public class DbStorage extends Storage
         }
         final String playerName = player.getName();
         final String worldName = world.getName();
-        
+
         saveToDb(playerName, worldName, inventory);
     }
 
@@ -158,6 +160,13 @@ public class DbStorage extends Storage
         Backpack backpack = database.find(Backpack.class).where().eq("player_name", player.getName()).eq("world_name", world.getName()).findUnique();
         backpack.setContentAmount(size);
         database.save(backpack);
+    }
+
+    @Override
+    public void purge(Player player, World world) {
+        if (has(player, world)) {
+            BACKPACKS.get(world.getUID()).remove(player.getUniqueId());
+        }
     }
 
 }
