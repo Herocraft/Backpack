@@ -26,6 +26,7 @@
  */
 package com.almuramc.backpack.storage.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -37,6 +38,7 @@ public class BackpackSlot
     @Id
     long id;
     private int slotNumber;
+    @Column(columnDefinition = "TEXT")
     String itemStackString;
 
     public long getId()

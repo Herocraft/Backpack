@@ -26,7 +26,6 @@
  */
 package com.almuramc.backpack.storage.type;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +34,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.almuramc.backpack.BackpackPlugin;
 import com.almuramc.backpack.inventory.BackpackInventory;
 import com.almuramc.backpack.storage.Storage;
 import com.almuramc.backpack.storage.model.Backpack;
@@ -71,22 +71,26 @@ public class DbStorage extends Storage
             List<ItemStack> items = new ArrayList<ItemStack>();
             Backpack backpack = database.find(Backpack.class).where().eq("player_name", player.getName()).eq("world_name", world.getName()).findUnique();
 
-            for (BackpackSlot slot : backpack.getSlots()) {
-                try {
-                    ItemStack stack = StreamSerializer.getDefault().deserializeItemStack(slot.getItemStackString());
-                    items.add(stack);
+            if (backpack != null) {
+                for (BackpackSlot slot : backpack.getSlots()) {
+                    try {
+                        ItemStack stack = StreamSerializer.getDefault().deserializeItemStack(slot.getItemStackString());
+                        items.add(stack);
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
+    
+                int psize = PermissionHelper.getMaxSizeFor(player, world);
+                int size = backpack.getContentAmount() > psize ? psize : backpack.getContentAmount();
+    
+                inventory = new BackpackInventory(Bukkit.createInventory(player, size, "Backpack"));
+                inventory.setContents(items.toArray(new ItemStack[items.size()]));
             }
-
-            int psize = PermissionHelper.getMaxSizeFor(player, world);
-            int size = backpack.getContentAmount() > psize ? psize : backpack.getContentAmount();
-            items = items.subList(0, size);
-
-            inventory = new BackpackInventory(Bukkit.createInventory(player, size, "Backpack"));
-            inventory.setContents(items.toArray(new ItemStack[items.size()]));
+            else {
+                inventory = new BackpackInventory(Bukkit.createInventory(player, BackpackPlugin.getInstance().getCached().getDefaultSize(), "Backpack"));
+            }
         }
 
         return inventory;
