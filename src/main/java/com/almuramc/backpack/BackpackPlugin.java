@@ -26,9 +26,16 @@
  */
 package com.almuramc.backpack;
 
+import java.util.List;
+
+import javax.persistence.PersistenceException;
+
 import com.almuramc.backpack.command.BackpackCommands;
 import com.almuramc.backpack.listener.BackpackListener;
 import com.almuramc.backpack.storage.Storage;
+import com.almuramc.backpack.storage.model.Backpack;
+import com.almuramc.backpack.storage.model.BackpackSlot;
+import com.almuramc.backpack.storage.type.DbStorage;
 import com.almuramc.backpack.storage.type.YamlStorage;
 import com.almuramc.backpack.util.CachedConfiguration;
 import com.almuramc.backpack.util.Dependency;
@@ -55,7 +62,12 @@ public class BackpackPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		//Assign configured storage
-		store = new YamlStorage(getDataFolder());
+	    if ("db".equals(cached.getStorageType())) {
+	        store = new DbStorage(getDatabase());
+            initDb();
+	    } else {
+	        store = new YamlStorage(getDataFolder());
+	    }
 		hooks.setupVaultEconomy();
 		hooks.setupVaultPermissions();
 		if (cached.useSpout() && hooks.isSpoutPluginEnabled()) {
@@ -68,6 +80,16 @@ public class BackpackPlugin extends JavaPlugin {
 		Bukkit.getServer().getPluginManager().registerEvents(new BackpackListener(), this);
 	}
 
+    private void initDb()
+    {
+        try {
+            this.getDatabase().find(BackpackSlot.class).findRowCount();
+        }
+        catch (PersistenceException e) {
+            super.installDDL();
+        }
+    }
+
 	@Override
 	public void onLoad() {
 		//Assign plugin instance
@@ -76,6 +98,15 @@ public class BackpackPlugin extends JavaPlugin {
 		cached = new CachedConfiguration();
 		hooks = new Dependency(this);
 	}
+
+    @Override
+    public List<Class<?>> getDatabaseClasses()
+    {
+        List<Class<?>> classes = super.getDatabaseClasses();
+        classes.add(Backpack.class);
+        classes.add(BackpackSlot.class);
+        return classes;
+    }
 
 	public static final BackpackPlugin getInstance() {
 		return instance;

@@ -87,6 +87,10 @@ public final class CachedConfiguration {
 		return cachedConfig.getInt("backpack.maximum-no-perm-size");
 	}
 
+	public String getStorageType() {
+	    return cachedConfig.getString("storage.type", "yaml");
+	}
+
 	public HashSet<String> getBlacklistedItems() {
 		if (elements != null) {
 			return elements;

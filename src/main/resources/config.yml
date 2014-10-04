@@ -7,6 +7,9 @@
 #   use-spout: Set to either true or false, this enables or disables hotkeys/additional guis support.
 #   use-saveonlogin: saves the backpacks for each player once they login (fixes the dupe glitch but uses more resources)
 #
+# Storage
+#   type: yaml or db (using bukkit.yml)
+#
 # Admin
 #   control-panel: Set to either true or false, this enables or disables the Control Panel Interface for Backpack for easy upgrading and other functions. use-spout *MUST* be enabled for this to work.
 #   hotkey: Default value is set to KEY_V, this value can be changed to pre-set the hotkey to open the control panel. use-spout *MUST* be enabled for this to work.
@@ -17,6 +20,8 @@ general:
   use-economy: false
   use-spoutplugin: true
   use-saveonlogin: false
+storage:
+  type: yaml
 admin:
   control-panel: false
   hotkey: KEY_V
