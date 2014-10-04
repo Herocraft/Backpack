@@ -26,6 +26,7 @@
  */
 package com.almuramc.backpack.storage.type;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,10 +39,10 @@ import com.almuramc.backpack.inventory.BackpackInventory;
 import com.almuramc.backpack.storage.Storage;
 import com.almuramc.backpack.storage.model.Backpack;
 import com.almuramc.backpack.storage.model.BackpackSlot;
-import com.almuramc.backpack.util.ItemStackSerializer;
 import com.almuramc.backpack.util.PermissionHelper;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.TxRunnable;
+import com.comphenix.protocol.utility.StreamSerializer;
 
 public class DbStorage extends Storage
 {
@@ -72,7 +73,7 @@ public class DbStorage extends Storage
 
             for (BackpackSlot slot : backpack.getSlots()) {
                 try {
-                    ItemStack stack = new ItemStackSerializer().deserializeFromString(slot.getItemStackString());
+                    ItemStack stack = StreamSerializer.getDefault().deserializeItemStack(slot.getItemStackString());
                     items.add(stack);
                 }
                 catch (Exception e) {
@@ -131,11 +132,10 @@ public class DbStorage extends Storage
                     if (stack == null) {
                         continue;
                     }
-                    ItemStackSerializer serializer = new ItemStackSerializer(stack);
                     try {
                         BackpackSlot slot = database.createEntityBean(BackpackSlot.class);
                         slot.setSlotNumber(i);
-                        slot.setItemStackString(serializer.serializeAsString());
+                        slot.setItemStackString(StreamSerializer.getDefault().serializeItemStack(stack));
                         slots.add(slot);
                     }
                     catch (Exception e) {

@@ -43,6 +43,11 @@
 			<id>vault-repo</id>
 			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
 		</repository>
+        <repository>
+          <id>comphenix-rep</id>
+          <name>Comphenix Repository</name>
+          <url>http://repo.comphenix.net/content/groups/public</url>
+        </repository>
 	</repositories>
 
 	<!-- Dependencies -->
@@ -65,6 +70,12 @@
 			<version>1.4</version>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+          <groupId>com.comphenix.protocol</groupId>
+          <artifactId>ProtocolLib</artifactId>
+          <version>3.4.0</version>
+          <scope>provided</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
