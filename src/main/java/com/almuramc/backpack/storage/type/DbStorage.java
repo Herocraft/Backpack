@@ -107,10 +107,8 @@ public class DbStorage extends Storage
         if (!has(player, world)) {
             return;
         }
-        final String playerName = player.getName();
-        final String worldName = world.getName();
 
-        saveToDb(playerName, worldName, inventory);
+        saveToDb(player.getName(), world.getName(), inventory);
     }
 
     public void saveToDb(final String playerName, final String worldName, final BackpackInventory inventory)
