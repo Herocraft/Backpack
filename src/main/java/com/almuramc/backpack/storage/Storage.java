@@ -31,34 +31,33 @@ import java.util.UUID;
 
 import com.almuramc.backpack.inventory.BackpackInventory;
 
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public abstract class Storage {
-	protected static final HashMap<UUID, HashMap<UUID, BackpackInventory>> BACKPACKS = new HashMap<UUID, HashMap<UUID, BackpackInventory>>();
+	protected static final HashMap<String, HashMap<UUID, BackpackInventory>> BACKPACKS = new HashMap<String, HashMap<UUID, BackpackInventory>>();
 
-	public final void store(Player player, World world, BackpackInventory toStore) {
-		if (player == null || world == null) {
+	public final void store(Player player, String worldName, BackpackInventory toStore) {
+		if (player == null || worldName == null) {
 			return;
 		}
-		HashMap<UUID, BackpackInventory> playerMap = BACKPACKS.get(world.getUID());
+		HashMap<UUID, BackpackInventory> playerMap = BACKPACKS.get(worldName);
 		if (playerMap == null) {
 			playerMap = new HashMap<UUID, BackpackInventory>();
 		}
 		if (playerMap.containsKey(player.getUniqueId()) && toStore == null) {
 			playerMap.remove(player.getUniqueId());
-			BACKPACKS.put(world.getUID(), playerMap);
+			BACKPACKS.put(worldName, playerMap);
 			return;
 		}
 		playerMap.put(player.getUniqueId(), toStore);
-		BACKPACKS.put(world.getUID(), playerMap);
+		BACKPACKS.put(worldName, playerMap);
 	}
 
-	public final BackpackInventory fetch(Player player, World world) {
-		if (player == null || world == null) {
+	public final BackpackInventory fetch(Player player, String worldName) {
+		if (player == null || worldName == null) {
 			return null;
 		}
-		HashMap<UUID, BackpackInventory> playerMap = BACKPACKS.get(world.getUID());
+		HashMap<UUID, BackpackInventory> playerMap = BACKPACKS.get(worldName);
 		if (playerMap == null) {
 			return null;
 		}
@@ -69,22 +68,22 @@ public abstract class Storage {
 		return backpack;
 	}
 
-	public final boolean has(World world) {
-		return BACKPACKS.get(world.getUID()) != null;
+	public final boolean has(String worldName) {
+		return BACKPACKS.get(worldName) != null;
 	}
 
-	public final boolean has(Player player, World world) {
-		HashMap<UUID, BackpackInventory> map = BACKPACKS.get(world.getUID());
+	public final boolean has(Player player, String worldName) {
+		HashMap<UUID, BackpackInventory> map = BACKPACKS.get(worldName);
 		return map != null && map.get(player.getUniqueId()) != null;
 	}
 
-	public abstract void initWorld(World world);
+	public abstract void initWorld(String worldName);
 
-	public abstract BackpackInventory load(Player player, World world);
+	public abstract BackpackInventory load(Player player, String worldName);
 
-	public abstract void save(Player player, World world, BackpackInventory backpack);
+	public abstract void save(Player player, String worldName, BackpackInventory backpack);
 
-	public abstract void purge(Player player, World world);
+	public abstract void purge(Player player, String worldName);
 
-	public abstract void updateSize(Player player, World world, int size);
+	public abstract void updateSize(Player player, String worldName, int size);
 }

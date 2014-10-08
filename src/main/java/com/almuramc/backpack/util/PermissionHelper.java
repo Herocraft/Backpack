@@ -31,8 +31,6 @@ import java.util.List;
 
 import com.almuramc.backpack.BackpackPlugin;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 /**
@@ -54,11 +52,11 @@ public class PermissionHelper {
 	 * @param player
 	 * @return
 	 */
-	public static int getMaxSizeFor(Player player, World world) {
+	public static int getMaxSizeFor(Player player, String worldName) {
 		String found;
 		int size = -1;
 		for (String perm : BACKPACK_SIZE_PERMS) {
-			if (BackpackPlugin.getInstance().getHooks().getPermissions().has(world.getName(), player.getName(), perm)) {
+			if (BackpackPlugin.getInstance().getHooks().getPermissions().has(worldName, player.getName(), perm)) {
 				found = perm;
 				int temp = Integer.parseInt(found.split("backpack.size.")[1]);
 				//Only set biggest size
@@ -73,32 +71,32 @@ public class PermissionHelper {
 		return size;
 	}
 
-	public static World getWorldToOpen(Player player, World world) {
+	public static String getWorldToOpen(Player player, String worldName) {
 		HashMap<String, List<String>> shares = BackpackPlugin.getInstance().getCached().getShareEntries();
 		/**
 		 * Shares has no entries
 		 * Player doesn't have share permission
 		 * Shares contains the world being shared to as a parent(key)
 		 */
-		if (shares == null || !BackpackPlugin.getInstance().getHooks().getPermissions().has(world, player.getName(), "backpack.share") || shares.containsKey(world.getName().toLowerCase())) {
-			return world;
+		if (shares == null || !BackpackPlugin.getInstance().getHooks().getPermissions().has(worldName, player.getName(), "backpack.share") || shares.containsKey(worldName.toLowerCase())) {
+			return worldName;
 		}
 
 		/**
 		 * None of the above conditions checked out, lets see if it is a child
 		 */
-		World w = null;
+		String w = null;
 		for (String key : shares.keySet()) {
 			List<String> temp = shares.get(key);
 			if (temp == null) {
 				continue;
 			}
 			//If the children list of worlds has either a wildcard or the world passed in return the parent
-			if (temp.contains("*") || temp.contains(world.getName().toLowerCase())) {
-				w = Bukkit.getWorld(key.toLowerCase());
+			if (temp.contains("*") || temp.contains(worldName.toLowerCase())) {
+				w = key.toLowerCase();
 				break;
 			}
 		}
-		return w == null ? world : w;
+		return w == null ? worldName : w;
 	}
 }

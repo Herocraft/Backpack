@@ -53,22 +53,22 @@ public class DbStorage extends Storage
     }
 
     @Override
-    public void initWorld(World world)
+    public void initWorld(String worldName)
     {
         // TODO Auto-generated method stub
     }
 
     @Override
-    public BackpackInventory load(Player player, World world)
+    public BackpackInventory load(Player player, String worldName)
     {
         BackpackInventory inventory;
 
-        if (has(player, world)) {
-            inventory = fetch(player, world);
+        if (has(player, worldName)) {
+            inventory = fetch(player, worldName);
         }
         else {
-            int psize = PermissionHelper.getMaxSizeFor(player, world);
-            Backpack backpack = database.find(Backpack.class).where().eq("player_name", player.getName()).eq("world_name", world.getName()).findUnique();
+            int psize = PermissionHelper.getMaxSizeFor(player, worldName);
+            Backpack backpack = database.find(Backpack.class).where().eq("player_name", player.getName()).eq("world_name", worldName).findUnique();
 
             if (backpack != null) {
                 int size = Math.min(psize, backpack.getContentAmount());
@@ -99,16 +99,16 @@ public class DbStorage extends Storage
     }
 
     @Override
-    public void save(Player player, World world, BackpackInventory inventory)
+    public void save(Player player, String worldName, BackpackInventory inventory)
     {
         // Store this backpack to memory
-        store(player, world, inventory);
+        store(player, worldName, inventory);
         // Save to db
-        if (!has(player, world)) {
+        if (!has(player, worldName)) {
             return;
         }
 
-        saveToDb(player.getName(), world.getName(), inventory);
+        saveToDb(player.getName(), worldName, inventory);
     }
 
     public void saveToDb(final String playerName, final String worldName, final BackpackInventory inventory)
@@ -153,17 +153,17 @@ public class DbStorage extends Storage
     }
 
     @Override
-    public void updateSize(Player player, World world, int size)
+    public void updateSize(Player player, String worldName, int size)
     {
-        Backpack backpack = database.find(Backpack.class).where().eq("player_name", player.getName()).eq("world_name", world.getName()).findUnique();
+        Backpack backpack = database.find(Backpack.class).where().eq("player_name", player.getName()).eq("world_name", worldName).findUnique();
         backpack.setContentAmount(size);
         database.save(backpack);
     }
 
     @Override
-    public void purge(Player player, World world) {
-        if (has(player, world)) {
-            BACKPACKS.get(world.getUID()).remove(player.getUniqueId());
+    public void purge(Player player, String worldName) {
+        if (has(player, worldName)) {
+            BACKPACKS.get(worldName).remove(player.getUniqueId());
         }
     }
 

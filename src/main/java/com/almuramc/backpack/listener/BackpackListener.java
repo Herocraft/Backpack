@@ -76,11 +76,11 @@ public class BackpackListener implements Listener {
 	public void onEntityDeath(EntityDeathEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
-			World world = PermissionHelper.getWorldToOpen(player, player.getWorld());
+			String worldName = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 			if (PERM.has(player.getWorld().getName(), player.getName(), "backpack.keepitems")) {
 				return;
 			}
-			BackpackInventory backpack = STORE.load(player, world);
+			BackpackInventory backpack = STORE.load(player, worldName);
 			ItemStack[] contents = backpack.getVisibleContents();
 			if (contents == null) {
 				return;
@@ -89,7 +89,7 @@ public class BackpackListener implements Listener {
 				player.getWorld().dropItemNaturally(player.getLocation(), toDrop);
 			}
 			backpack.clear();
-			STORE.save(player, world, backpack);
+			STORE.save(player, worldName, backpack);
 		}
 	}
 
@@ -158,7 +158,7 @@ public class BackpackListener implements Listener {
 	
 	@EventHandler
 	public void onWorldLoad(WorldLoadEvent event) {
-		plugin.getStore().initWorld(event.getWorld());
+		plugin.getStore().initWorld(event.getWorld().getName());
 	}
 
 	@EventHandler
@@ -171,7 +171,7 @@ public class BackpackListener implements Listener {
 			return;
 		}
 		ItemStack item = event.getItem().getItemStack();
-		World world = PermissionHelper.getWorldToOpen(player, player.getWorld());
+		String world = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		BackpackInventory inventory = STORE.load(player, world);
 		//backpack is full, we are done here.
 		if (inventory.firstEmpty() == -1) {
@@ -215,7 +215,7 @@ public class BackpackListener implements Listener {
 		if (holder.equals(player) && title.equals("Backpack")) {
 			BackpackInventory backpack = new BackpackInventory(inventory);
 			List<ItemStack> blacklistedItems = backpack.getIllegalItems(CONFIG.getBlacklistedItems());
-			World world = PermissionHelper.getWorldToOpen(player, player.getWorld());
+			String world = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 			boolean hadIllegalItems = false;
 			for (ItemStack item : blacklistedItems) {
 				if (!hadIllegalItems) {
@@ -239,10 +239,10 @@ public class BackpackListener implements Listener {
 	}
 	
 	private void forceSave(Player player) {
-		World world = PermissionHelper.getWorldToOpen(player, player.getWorld());
-		BackpackInventory inventory = STORE.load(player, world);
-		STORE.save(player, world, inventory);
-		STORE.purge(player, world);
+		String worldName = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
+		BackpackInventory inventory = STORE.load(player, worldName);
+		STORE.save(player, worldName, inventory);
+		STORE.purge(player, worldName);
 		if (debug) {
 			Bukkit.getLogger().warning("[Backpack Debug] - BackpackListener.java - forceSave method called.");
 		}

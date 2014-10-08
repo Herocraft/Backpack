@@ -74,7 +74,7 @@ public class UpgradePanel extends GenericPopup {
 	public UpgradePanel(SpoutPlayer player) {
 		super();
 		this.player = player;
-		BackpackInventory backpack = STORE.load(player, PermissionHelper.getWorldToOpen(player, player.getWorld()));
+		BackpackInventory backpack = STORE.load(player, PermissionHelper.getWorldToOpen(player, player.getWorld().getName()));
 		int curSize = backpack.getSize();
 		buy18 = null;
 		buy27 = null;
@@ -122,7 +122,7 @@ public class UpgradePanel extends GenericPopup {
 		int nextLoc = -70;
 		int xLoc = -85;
 
-		World target = PermissionHelper.getWorldToOpen(player, player.getWorld());
+		String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		int maxSize = PermissionHelper.getMaxSizeFor(player, target);
 		if (curSize <= 9 && maxSize >= 18) {
 			GenericLabel Size18 = new GenericLabel();
@@ -259,7 +259,7 @@ public class UpgradePanel extends GenericPopup {
 	}
 
 	void onBuy18Click() {
-		World target = PermissionHelper.getWorldToOpen(player, player.getWorld());
+		String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		BackpackInventory backpack = STORE.load(player, target);
 		if (ECON != null && CONFIG.useEconomy() && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.noupgradecost")) {
 			if (!ECON.has(player.getName(), cost18)) {
@@ -277,7 +277,7 @@ public class UpgradePanel extends GenericPopup {
 	}
 
 	void onBuy27Click() {
-		World target = PermissionHelper.getWorldToOpen(player, player.getWorld());
+	    String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		BackpackInventory backpack = STORE.load(player, target);
 		if (ECON != null && CONFIG.useEconomy() && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.noupgradecost")) {
 			if (!ECON.has(player.getName(), cost27)) {
@@ -295,7 +295,7 @@ public class UpgradePanel extends GenericPopup {
 	}
 
 	void onBuy36Click() {
-		World target = PermissionHelper.getWorldToOpen(player, player.getWorld());
+	    String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		BackpackInventory backpack = STORE.load(player, target);
 		if (ECON != null && CONFIG.useEconomy() && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.noupgradecost")) {
 			if (!ECON.has(player.getName(), cost36)) {
@@ -313,7 +313,7 @@ public class UpgradePanel extends GenericPopup {
 	}
 
 	void onBuy45Click() {
-		World target = PermissionHelper.getWorldToOpen(player, player.getWorld());
+	    String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		BackpackInventory backpack = STORE.load(player, target);
 		if (ECON != null && CONFIG.useEconomy() && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.noupgradecost")) {
 			if (!ECON.has(player.getName(), cost45)) {
@@ -331,7 +331,7 @@ public class UpgradePanel extends GenericPopup {
 	}
 
 	void onBuy54Click() {
-		World target = PermissionHelper.getWorldToOpen(player, player.getWorld());
+	    String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		BackpackInventory backpack = STORE.load(player, target);
 		if (ECON != null && CONFIG.useEconomy() && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.noupgradecost")) {
 			if (!ECON.has(player.getName(), cost54)) {

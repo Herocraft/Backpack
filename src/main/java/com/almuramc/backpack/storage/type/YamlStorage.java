@@ -60,42 +60,42 @@ public class YamlStorage extends Storage {
 	}
 
 	@Override
-	public void initWorld(World world) {
-		File worldDir = new File(STORAGE_DIR, world.getName());
+	public void initWorld(String worldName) {
+		File worldDir = new File(STORAGE_DIR, worldName);
 		if (!worldDir.exists()) {
 			worldDir.mkdirs();
 		}
 	}
 
 	@Override
-	public BackpackInventory load(Player player, World world) {
+	public BackpackInventory load(Player player, String worldName) {
 		BackpackInventory backpack;
-		if (has(player, world)) {
-			backpack = fetch(player, world);
+		if (has(player, worldName)) {
+			backpack = fetch(player, worldName);
 		} else {
-			backpack = loadFromFile(player, world);
+			backpack = loadFromFile(player, worldName);
 		}
 		return backpack;
 	}
 
 	@Override
-	public void save(Player player, World world, BackpackInventory backpack) {
+	public void save(Player player, String worldName, BackpackInventory backpack) {
 		//Store this backpack to memory
-		store(player, world, backpack);
+		store(player, worldName, backpack);
 		//Save to file
-		if (!has(player, world)) {
+		if (!has(player, worldName)) {
 			return;
 		}
-		saveToFile(player, world, backpack);
+		saveToFile(player, worldName, backpack);
 	}
 
 	@Override
-	public void updateSize(Player player, World world, int size) {
-		if (player == null || world == null || !BackpackInventory.isValidSize(size)) {
+	public void updateSize(Player player, String worldName, int size) {
+		if (player == null || worldName == null || !BackpackInventory.isValidSize(size)) {
 			return;
 		}
 
-		File file = new File(STORAGE_DIR + File.separator + world.getName(), player.getName() + ".yml");
+		File file = new File(STORAGE_DIR + File.separator + worldName, player.getName() + ".yml");
 		try {
 			//Load in the file to write
 			READER.load(file);
@@ -105,8 +105,8 @@ public class YamlStorage extends Storage {
 		}
 	}
 
-	private BackpackInventory loadFromFile(Player player, World world) {
-		File worldDir = new File(STORAGE_DIR, world.getName());
+	private BackpackInventory loadFromFile(Player player, String worldName) {
+		File worldDir = new File(STORAGE_DIR, worldName);
 		File playerDat = null;
 		for (String fname : worldDir.list(new BackpackFilter())) {
 			String name = fname.split(".yml")[0];
@@ -122,7 +122,7 @@ public class YamlStorage extends Storage {
 			ConfigurationSection parent = READER.getConfigurationSection("backpack");
 			Set<String> temp = parent.getKeys(false);
 			String[] keys = temp.toArray(new String[temp.size()]);
-			int psize = PermissionHelper.getMaxSizeFor(player, world);
+			int psize = PermissionHelper.getMaxSizeFor(player, worldName);
 			int size = READER.getInt("contents-amount", BackpackPlugin.getInstance().getCached().getDefaultSize());
 			if (size > psize) {
 				size = psize;
@@ -144,8 +144,8 @@ public class YamlStorage extends Storage {
 		}
 	}
 
-	private void saveToFile(Player player, World world, BackpackInventory backpack) {
-		File playerBackpack = new File(STORAGE_DIR + File.separator + world.getName(), player.getName() + ".yml");
+	private void saveToFile(Player player, String worldName, BackpackInventory backpack) {
+		File playerBackpack = new File(STORAGE_DIR + File.separator + worldName, player.getName() + ".yml");
 		try {
 			if (!playerBackpack.exists()) {
 				playerBackpack.createNewFile();
@@ -178,7 +178,7 @@ public class YamlStorage extends Storage {
 	}
 
     @Override
-    public void purge(Player player, World world)
+    public void purge(Player player, String worldName)
     {
         //Preserve cache for this storage type
     }

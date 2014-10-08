@@ -61,7 +61,7 @@ public class BackpackCommands implements CommandExecutor {
 			boolean useSpoutInterface = false;
 			if (strings.length == 0 && player != null) {
 				if (PERM.has(player.getWorld().getName(), player.getName(), "backpack.use")) {
-					player.openInventory(STORE.load(player, PermissionHelper.getWorldToOpen(player, player.getWorld())).getInventory());
+					player.openInventory(STORE.load(player, PermissionHelper.getWorldToOpen(player, player.getWorld().getName())).getInventory());
 					return true;
 				} else {
 					MessageHelper.sendMessage(commandSender, "Insufficient permissions to use backpack!");
@@ -77,7 +77,7 @@ public class BackpackCommands implements CommandExecutor {
 					MessageHelper.sendMessage(commandSender, strings[1] + " is not online!");
 					return true;
 				}
-				final BackpackInventory backpack = STORE.load(target, target.getWorld());
+				final BackpackInventory backpack = STORE.load(target, target.getWorld().getName());
 				backpack.clear();
 				if (player != null && CONFIG.useSpout() && HOOKS.isSpoutPluginEnabled()) {
 					SafeSpout.sendMessage(player, target.getName() + "'s backpack was cleared.", "Backpack", Material.GOLDEN_APPLE);
@@ -98,7 +98,7 @@ public class BackpackCommands implements CommandExecutor {
 				}
 				return true;
 			} else if (strings.length > 0 && strings[0].equalsIgnoreCase("upgrade") && player != null) {
-				World target = PermissionHelper.getWorldToOpen(player, player.getWorld());
+				String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 				if (!PERM.has(player.getWorld().getName(), player.getName(), "backpack.upgrade")) {
 					MessageHelper.sendMessage(commandSender, "Insufficient permissions to upgrade your backpack!");
 					return true;

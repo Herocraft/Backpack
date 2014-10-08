@@ -34,7 +34,6 @@ import org.getspout.spoutapi.gui.ScreenType;
 import org.getspout.spoutapi.keyboard.BindingExecutionDelegate;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -52,7 +51,7 @@ public class BackpackInputHandler implements BindingExecutionDelegate {
 		if (!keyBindingEvent.getScreenType().equals(ScreenType.GAME_SCREEN)) {
 			return;
 		}
-		World target = PermissionHelper.getWorldToOpen(player, player.getWorld());
+		String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		Inventory toOpen = BackpackPlugin.getInstance().getStore().load(player, target).getInventory();
 		player.openInventory(toOpen);
 	}
