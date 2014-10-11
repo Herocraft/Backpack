@@ -86,7 +86,7 @@ public class BackpackPlugin extends JavaPlugin {
             this.getDatabase().find(BackpackSlot.class).findRowCount();
         }
         catch (PersistenceException e) {
-            super.installDDL();
+            this.installDDL();
         }
     }
 

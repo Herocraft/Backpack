@@ -50,7 +50,6 @@ import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import org.bukkit.Material;
-import org.bukkit.World;
 
 public class UpgradePanel extends GenericPopup {
 	final GenericButton close;

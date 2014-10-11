@@ -29,6 +29,7 @@ package com.almuramc.backpack.command;
 import com.almuramc.backpack.BackpackPlugin;
 import com.almuramc.backpack.inventory.BackpackInventory;
 import com.almuramc.backpack.storage.Storage;
+import com.almuramc.backpack.storage.type.DbStorage;
 import com.almuramc.backpack.util.CachedConfiguration;
 import com.almuramc.backpack.util.Dependency;
 import com.almuramc.backpack.util.MessageHelper;
@@ -39,7 +40,6 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -102,7 +102,8 @@ public class BackpackCommands implements CommandExecutor {
 				if (!PERM.has(player.getWorld().getName(), player.getName(), "backpack.upgrade")) {
 					MessageHelper.sendMessage(commandSender, "Insufficient permissions to upgrade your backpack!");
 					return true;
-				}	if (CONFIG.useSpout() && HOOKS.isSpoutPluginEnabled()) {
+				}
+				if (CONFIG.useSpout() && HOOKS.isSpoutPluginEnabled()) {
 					SpoutPlayer sPlayer = (SpoutPlayer) player;
 					if (sPlayer.isSpoutCraftEnabled()) {  // Check if player is a Spoutcraft User
 						useSpoutInterface = true;
@@ -144,6 +145,18 @@ public class BackpackCommands implements CommandExecutor {
 					}
 				}
 				return true;
+			} else if (strings.length > 1 && strings[0].equalsIgnoreCase("migrate")) {
+			    if (player != null && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.admin")) {
+                    MessageHelper.sendMessage(commandSender, "Insufficient permissions to migrate data!");
+                    return true;
+                }
+			    if ("yaml".equalsIgnoreCase(strings[1]) && STORE instanceof DbStorage) {
+			        DbStorage dbStorage = (DbStorage) STORE;
+			        dbStorage.migrate();
+			    } else {
+			        MessageHelper.sendMessage(commandSender, "Unsupported migration type!");
+                    return true;
+			    }
 			}
 		}
 		return true;
