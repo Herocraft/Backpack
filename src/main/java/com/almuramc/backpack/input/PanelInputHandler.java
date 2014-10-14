@@ -38,7 +38,7 @@ public class PanelInputHandler implements BindingExecutionDelegate {
 	@Override
 	public void keyPressed(KeyBindingEvent keyBindingEvent) {
 		SpoutPlayer player = keyBindingEvent.getPlayer();
-		if (BackpackPlugin.getInstance().getHooks().getPermissions().has(player.getWorld().getName(), player.getName(), "backpack.admin")) {
+		if (BackpackPlugin.getInstance().getHooks().getPermissions().playerHas(player.getWorld().getName(), player, "backpack.admin")) {
 
 		}
 		if (!keyBindingEvent.getScreenType().equals(ScreenType.GAME_SCREEN)) {

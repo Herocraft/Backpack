@@ -28,9 +28,12 @@ package com.almuramc.backpack.storage.type;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -47,6 +50,9 @@ import com.almuramc.backpack.util.PermissionHelper;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.TxRunnable;
 import com.comphenix.protocol.utility.StreamSerializer;
+import com.evilmidget38.UUIDFetcher;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class DbStorage extends Storage
 {
@@ -73,7 +79,7 @@ public class DbStorage extends Storage
         }
         else {
             int psize = PermissionHelper.getMaxSizeFor(player, worldName);
-            Backpack backpack = database.find(Backpack.class).where().eq("player_name", player.getName()).eq("world_name", worldName).findUnique();
+            Backpack backpack = database.find(Backpack.class).where().eq("uuid", player.getUniqueId()).eq("world_name", worldName).findUnique();
 
             if (backpack != null) {
                 int size = Math.min(psize, backpack.getContentAmount());
@@ -113,20 +119,21 @@ public class DbStorage extends Storage
             return;
         }
 
-        saveToDb(player.getName(), worldName, inventory);
+        saveToDb(player, worldName, inventory);
     }
 
-    public void saveToDb(final String playerName, final String worldName, final BackpackInventory inventory)
+    public void saveToDb(final Player player, final String worldName, final BackpackInventory inventory)
     {
         database.execute(new TxRunnable() {
 
             @Override
             public void run()
             {
-                Backpack backpack = database.find(Backpack.class).where().eq("player_name", playerName).eq("world_name", worldName).findUnique();
+                Backpack backpack = database.find(Backpack.class).where().eq("uuid", player.getUniqueId()).eq("world_name", worldName).findUnique();
                 if (backpack == null) {
                     backpack = database.createEntityBean(Backpack.class);
-                    backpack.setPlayerName(playerName);
+                    backpack.setPlayerName(player.getName());
+                    backpack.setUuid(player.getUniqueId());
                     backpack.setWorldName(worldName);
                 }
                 else {
@@ -160,7 +167,7 @@ public class DbStorage extends Storage
     @Override
     public void updateSize(Player player, String worldName, int size)
     {
-        Backpack backpack = database.find(Backpack.class).where().eq("player_name", player.getName()).eq("world_name", worldName).findUnique();
+        Backpack backpack = database.find(Backpack.class).where().eq("uuid", player.getUniqueId()).eq("world_name", worldName).findUnique();
         backpack.setContentAmount(size);
         database.save(backpack);
     }
@@ -174,12 +181,12 @@ public class DbStorage extends Storage
 
     public void migrate()
     {
-        YamlConfiguration playerYaml = new YamlConfiguration();
+        final YamlConfiguration playerYaml = new YamlConfiguration();
         File backpacks = new File(BackpackPlugin.getInstance().getDataFolder(), "backpacks");
         File[] worldDirs = backpacks.listFiles();
 
-        for (File worldDir : worldDirs) {
-            File[] playerFiles = worldDir.listFiles(new FilenameFilter() {
+        for (final File worldDir : worldDirs) {
+            final File[] playerFiles = worldDir.listFiles(new FilenameFilter() {
                 
                 @Override
                 public boolean accept(File dir, String name)
@@ -188,46 +195,90 @@ public class DbStorage extends Storage
                 }
             });
 
-            for (File playerFile : playerFiles) {
-                try {
-                    playerYaml.load(playerFile);
-                    String playerName = playerFile.getName().split(".yml")[0];
-                    String worldName = PermissionHelper.getWorldToOpen(playerName, worldDir.getName());
-                    Backpack backpack = database.find(Backpack.class).where().eq("player_name", playerName).eq("world_name", worldName).findUnique();
+            List<String> playerNames = Lists.transform(Lists.newArrayList(playerFiles), new Function<File, String>() {
 
-                    if (backpack == null) {
-                        backpack = database.createEntityBean(Backpack.class);
-                        backpack.setPlayerName(playerName);
-                        backpack.setWorldName(worldName);
-                        backpack.setContentAmount(playerYaml.getInt("contents-amount"));
+                @Override
+                public String apply(File playerFile)
+                {
+                    return playerFile.getName().split(".yml")[0];
+                }
+            });
 
-                        List<BackpackSlot> slots = new ArrayList<BackpackSlot>();
-                        ConfigurationSection backpackSection = playerYaml.getConfigurationSection("backpack");
-                        Set<String> slotKeys = backpackSection.getKeys(false);
-                        String[] contents = slotKeys.toArray(new String[slotKeys.size()]);
+            final UUIDFetcher fetcher = new UUIDFetcher(playerNames);
 
-                        for (int i = 0; i < 54 && i < contents.length; i++) {
-                            final ConfigurationSection section = backpackSection.getConfigurationSection(contents[i]);
-                            ItemStack stack = section.getItemStack("ItemStack", null);
-                            if (stack == null) {
-                                continue;
-                            }
+            Bukkit.getScheduler().runTaskAsynchronously(BackpackPlugin.getInstance(), new Runnable() {
+                
+                @Override
+                public void run()
+                {
+                    Map<String, UUID> uuidMap = null;
 
-                            BackpackSlot slot = database.createEntityBean(BackpackSlot.class);
-                            slot.setSlotNumber(i);
-                            slot.setItemStackString(StreamSerializer.getDefault().serializeItemStack(stack));
-                            slots.add(slot);
+                    try {
+                        uuidMap = fetcher.call();
+                    }
+                    catch (Exception e) {
+                        System.out.println("Error fetching UUIDs: " + e.getMessage());
+                    }
+
+                    if (uuidMap == null) {
+                        return;
+                    }
+
+                    for (File playerFile : playerFiles) {
+                        try {
+                            playerYaml.load(playerFile);
+                        }
+                        catch (Exception e) {
+                            System.out.println("Error reading " + playerFile.getName() + ": " + e.getMessage());
+                            continue;
                         }
 
-                        backpack.setSlots(slots);
-                        database.save(backpack);
-                        System.out.println("Migration of " + playerFile.getName() + " OK");
+                        String playerName = playerFile.getName().split(".yml")[0];
+                        String worldName = PermissionHelper.getParentWorld(worldDir.getName());
+                        Backpack backpack = database.find(Backpack.class).where().eq("uuid", uuidMap.get(playerName)).eq("world_name", worldName).findUnique();
+
+                        if (backpack == null) {
+                            backpack = database.createEntityBean(Backpack.class);
+                            backpack.setPlayerName(playerName);
+                            backpack.setUuid(uuidMap.get(playerName));
+                            backpack.setWorldName(worldName);
+                            backpack.setContentAmount(playerYaml.getInt("contents-amount"));
+
+                            List<BackpackSlot> slots = new ArrayList<BackpackSlot>();
+                            ConfigurationSection backpackSection = playerYaml.getConfigurationSection("backpack");
+                            Set<String> slotKeys = backpackSection.getKeys(false);
+                            String[] contents = slotKeys.toArray(new String[slotKeys.size()]);
+
+                            for (int i = 0; i < 54 && i < contents.length; i++) {
+                                final ConfigurationSection section = backpackSection.getConfigurationSection(contents[i]);
+                                ItemStack stack = section.getItemStack("ItemStack", null);
+                                if (stack == null) {
+                                    continue;
+                                }
+
+                                String stackString = null;
+
+                                try {
+                                    StreamSerializer.getDefault().serializeItemStack(stack);
+                                }
+                                catch (IOException e) {
+                                    System.out.println("Error serializing item stack for " + playerName + ": " + e.getMessage());
+                                    continue;
+                                }
+
+                                BackpackSlot slot = database.createEntityBean(BackpackSlot.class);
+                                slot.setSlotNumber(i);
+                                slot.setItemStackString(stackString);
+                                slots.add(slot);
+                            }
+
+                            backpack.setSlots(slots);
+                            database.save(backpack);
+                            System.out.println("Migration of " + playerFile.getName() + " OK");
+                        }
                     }
                 }
-                catch (Exception e) {
-                    System.out.println("Migration of " + playerFile.getName() + " FAILED");
-                }
-            }
+            });
         }
     }
 }

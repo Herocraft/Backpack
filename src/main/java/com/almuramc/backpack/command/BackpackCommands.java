@@ -60,7 +60,7 @@ public class BackpackCommands implements CommandExecutor {
 
 			boolean useSpoutInterface = false;
 			if (strings.length == 0 && player != null) {
-				if (PERM.has(player.getWorld().getName(), player.getName(), "backpack.use")) {
+				if (PERM.playerHas(player.getWorld().getName(), player, "backpack.use")) {
 					player.openInventory(STORE.load(player, PermissionHelper.getWorldToOpen(player, player.getWorld().getName())).getInventory());
 					return true;
 				} else {
@@ -68,7 +68,7 @@ public class BackpackCommands implements CommandExecutor {
 				}
 				return true;
 			} else if (strings.length > 1 && strings[0].equalsIgnoreCase("clear")) {
-				if (player != null && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.admin")) {
+				if (player != null && !PERM.playerHas(player.getWorld().getName(), player, "backpack.admin")) {
 					MessageHelper.sendMessage(commandSender, "Insufficient permissions to clear backpacks!");
 					return true;
 				}
@@ -86,7 +86,7 @@ public class BackpackCommands implements CommandExecutor {
 				}
 				return true;
 			} else if (strings.length > 0 && strings[0].equalsIgnoreCase("reload")) {
-				if (player != null && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.admin")) {
+				if (player != null && !PERM.playerHas(player.getWorld().getName(), player, "backpack.admin")) {
 					MessageHelper.sendMessage(commandSender, "Insufficient permissions to reload backpack!");
 					return true;
 				}
@@ -99,7 +99,7 @@ public class BackpackCommands implements CommandExecutor {
 				return true;
 			} else if (strings.length > 0 && strings[0].equalsIgnoreCase("upgrade") && player != null) {
 				String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
-				if (!PERM.has(player.getWorld().getName(), player.getName(), "backpack.upgrade")) {
+				if (!PERM.playerHas(player.getWorld().getName(), player, "backpack.upgrade")) {
 					MessageHelper.sendMessage(commandSender, "Insufficient permissions to upgrade your backpack!");
 					return true;
 				}
@@ -122,9 +122,9 @@ public class BackpackCommands implements CommandExecutor {
 						}
 						return true;
 					}
-					if (ECON != null && CONFIG.useEconomy() && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.noupgradecost")) {
+					if (ECON != null && CONFIG.useEconomy() && !PERM.playerHas(player.getWorld().getName(), player, "backpack.noupgradecost")) {
 						double cost = CONFIG.getUpgradeCosts().get("slot" + newSize);
-						if (!ECON.has(player.getName(), cost)) {
+						if (!ECON.has(player, cost)) {
 							if (CONFIG.useSpout() && HOOKS.isSpoutPluginEnabled()) {
 								SafeSpout.sendMessage(player, "Not enough money!", "Backpack", Material.BONE);
 							} else {
@@ -132,7 +132,7 @@ public class BackpackCommands implements CommandExecutor {
 							}
 							return true;
 						}
-						ECON.withdrawPlayer(player.getName(), cost);
+						ECON.withdrawPlayer(player, cost);
 						MessageHelper.sendMessage(commandSender, "Your account has been deducted by: " + cost);
 					}
 					backpack.setSize(player, newSize);
@@ -146,7 +146,7 @@ public class BackpackCommands implements CommandExecutor {
 				}
 				return true;
 			} else if (strings.length > 1 && strings[0].equalsIgnoreCase("migrate")) {
-			    if (player != null && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.admin")) {
+			    if (player != null && !PERM.playerHas(player.getWorld().getName(), player, "backpack.admin")) {
                     MessageHelper.sendMessage(commandSender, "Insufficient permissions to migrate data!");
                     return true;
                 }

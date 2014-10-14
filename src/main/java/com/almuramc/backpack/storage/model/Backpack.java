@@ -27,6 +27,7 @@
 package com.almuramc.backpack.storage.model;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -41,6 +42,7 @@ public class Backpack
     @Id
     long id;
     private String playerName;
+    private UUID uuid;
     private String worldName;
     private int contentAmount;
     @OneToMany(cascade = CascadeType.ALL)
@@ -64,6 +66,16 @@ public class Backpack
     public void setPlayerName(String playerName)
     {
         this.playerName = playerName;
+    }
+
+    public UUID getUuid()
+    {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid)
+    {
+        this.uuid = uuid;
     }
 
     public String getWorldName()

@@ -260,12 +260,12 @@ public class UpgradePanel extends GenericPopup {
 	void onBuy18Click() {
 		String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		BackpackInventory backpack = STORE.load(player, target);
-		if (ECON != null && CONFIG.useEconomy() && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.noupgradecost")) {
-			if (!ECON.has(player.getName(), cost18)) {
+		if (ECON != null && CONFIG.useEconomy() && !PERM.playerHas(player.getWorld().getName(), player, "backpack.noupgradecost")) {
+			if (!ECON.has(player, cost18)) {
 				SafeSpout.sendMessage(player, "Not enough money!", "Backpack", Material.BONE);
 				return;
 			}
-			ECON.withdrawPlayer(player.getName(), cost18);
+			ECON.withdrawPlayer(player, cost18);
 			MessageHelper.sendMessage(player, "Your account has been deducted by: " + cost18);
 		}
 		backpack.setSize(player, 18);
@@ -278,12 +278,12 @@ public class UpgradePanel extends GenericPopup {
 	void onBuy27Click() {
 	    String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		BackpackInventory backpack = STORE.load(player, target);
-		if (ECON != null && CONFIG.useEconomy() && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.noupgradecost")) {
-			if (!ECON.has(player.getName(), cost27)) {
+		if (ECON != null && CONFIG.useEconomy() && !PERM.playerHas(player.getWorld().getName(), player, "backpack.noupgradecost")) {
+			if (!ECON.has(player, cost27)) {
 				SafeSpout.sendMessage(player, "Not enough money!", "Backpack", Material.BONE);
 				return;
 			}
-			ECON.withdrawPlayer(player.getName(), cost27);
+			ECON.withdrawPlayer(player, cost27);
 			MessageHelper.sendMessage(player, "Your account has been deducted by: " + cost27);
 		}
 		backpack.setSize(player, 27);
@@ -296,12 +296,12 @@ public class UpgradePanel extends GenericPopup {
 	void onBuy36Click() {
 	    String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		BackpackInventory backpack = STORE.load(player, target);
-		if (ECON != null && CONFIG.useEconomy() && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.noupgradecost")) {
-			if (!ECON.has(player.getName(), cost36)) {
+		if (ECON != null && CONFIG.useEconomy() && !PERM.playerHas(player.getWorld().getName(), player, "backpack.noupgradecost")) {
+			if (!ECON.has(player, cost36)) {
 				SafeSpout.sendMessage(player, "Not enough money!", "Backpack", Material.BONE);
 				return;
 			}
-			ECON.withdrawPlayer(player.getName(), cost36);
+			ECON.withdrawPlayer(player, cost36);
 			MessageHelper.sendMessage(player, "Your account has been deducted by: " + cost36);
 		}
 		backpack.setSize(player, 36);
@@ -314,12 +314,12 @@ public class UpgradePanel extends GenericPopup {
 	void onBuy45Click() {
 	    String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		BackpackInventory backpack = STORE.load(player, target);
-		if (ECON != null && CONFIG.useEconomy() && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.noupgradecost")) {
-			if (!ECON.has(player.getName(), cost45)) {
+		if (ECON != null && CONFIG.useEconomy() && !PERM.playerHas(player.getWorld().getName(), player, "backpack.noupgradecost")) {
+			if (!ECON.has(player, cost45)) {
 				SafeSpout.sendMessage(player, "Not enough money!", "Backpack", Material.BONE);
 				return;
 			}
-			ECON.withdrawPlayer(player.getName(), cost45);
+			ECON.withdrawPlayer(player, cost45);
 			MessageHelper.sendMessage(player, "Your account has been deducted by: " + cost45);
 		}
 		backpack.setSize(player, 45);
@@ -332,12 +332,12 @@ public class UpgradePanel extends GenericPopup {
 	void onBuy54Click() {
 	    String target = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
 		BackpackInventory backpack = STORE.load(player, target);
-		if (ECON != null && CONFIG.useEconomy() && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.noupgradecost")) {
-			if (!ECON.has(player.getName(), cost54)) {
+		if (ECON != null && CONFIG.useEconomy() && !PERM.playerHas(player.getWorld().getName(), player, "backpack.noupgradecost")) {
+			if (!ECON.has(player, cost54)) {
 				SafeSpout.sendMessage(player, "Not enough money!", "Backpack", Material.BONE);
 				return;
 			}
-			ECON.withdrawPlayer(player.getName(), cost54);
+			ECON.withdrawPlayer(player, cost54);
 			MessageHelper.sendMessage(player, "Your account has been deducted by: " + cost54);
 		}
 		backpack.setSize(player, 54);

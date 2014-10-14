@@ -74,7 +74,7 @@ public class BackpackListener implements Listener {
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
 			String worldName = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
-			if (PERM.has(player.getWorld().getName(), player.getName(), "backpack.keepitems")) {
+			if (PERM.playerHas(player.getWorld().getName(), player, "backpack.keepitems")) {
 				return;
 			}
 			BackpackInventory backpack = STORE.load(player, worldName);
@@ -128,7 +128,7 @@ public class BackpackListener implements Listener {
 			return;
 		}
 		Player player = (Player) event.getPlayer();
-		if (event.getInventory().getTitle().equals("Backpack") && !PERM.has(player.getWorld().getName(), player.getName(), "backpack.use")) {
+		if (event.getInventory().getTitle().equals("Backpack") && !PERM.playerHas(player.getWorld().getName(), player, "backpack.use")) {
 			event.setCancelled(true);
 			return;
 		}
@@ -160,7 +160,7 @@ public class BackpackListener implements Listener {
 
 	@EventHandler
 	public void onItemPickup(PlayerPickupItemEvent event) {
-		if (!PERM.has(event.getPlayer().getWorld(), event.getPlayer().getName(), "backpack.overflow")) {
+		if (!PERM.playerHas(event.getPlayer().getWorld().getName(), event.getPlayer(), "backpack.overflow")) {
 			return;
 		}
 		Player player = event.getPlayer();
