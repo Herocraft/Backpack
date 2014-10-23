@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -217,7 +218,7 @@ public class DbStorage extends Storage
                         uuidMap = fetcher.call();
                     }
                     catch (Exception e) {
-                        System.out.println("Error fetching UUIDs: " + e.getMessage());
+                        Logger.getLogger("Minecraft").severe("Error fetching UUIDs: " + e.getMessage());
                     }
 
                     if (uuidMap == null) {
@@ -229,7 +230,7 @@ public class DbStorage extends Storage
                             playerYaml.load(playerFile);
                         }
                         catch (Exception e) {
-                            System.out.println("Error reading " + playerFile.getName() + ": " + e.getMessage());
+                            Logger.getLogger("Minecraft").severe("Error reading " + playerFile.getName() + ": " + e.getMessage());
                             continue;
                         }
 
@@ -262,7 +263,7 @@ public class DbStorage extends Storage
                                     StreamSerializer.getDefault().serializeItemStack(stack);
                                 }
                                 catch (IOException e) {
-                                    System.out.println("Error serializing item stack for " + playerName + ": " + e.getMessage());
+                                    Logger.getLogger("Minecraft").severe("Error serializing item stack for " + playerName + ": " + e.getMessage());
                                     continue;
                                 }
 
@@ -274,7 +275,7 @@ public class DbStorage extends Storage
 
                             backpack.setSlots(slots);
                             database.save(backpack);
-                            System.out.println("Migration of " + playerFile.getName() + " OK");
+                            Logger.getLogger("Minecraft").info("Migration of " + playerFile.getName() + " OK");
                         }
                     }
                 }

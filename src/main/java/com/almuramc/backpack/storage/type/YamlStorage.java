@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.almuramc.backpack.BackpackPlugin;
 import com.almuramc.backpack.inventory.BackpackInventory;
@@ -108,13 +109,17 @@ public class YamlStorage extends Storage {
 	private BackpackInventory loadFromFile(Player player, String worldName) {
 		File worldDir = new File(STORAGE_DIR, worldName);
 		File playerDat = null;
-		System.out.println("DEBUG: worldName [" + worldName + "]");
-		for (String fname : worldDir.list(new BackpackFilter())) {
-			String name = fname.split(".yml")[0];
-			if (player.getName().equals(name)) {
-				playerDat = new File(worldDir, fname);
-				break;
-			}
+		String[] backpacks = worldDir.list(new BackpackFilter());
+		if (backpacks != null) {
+    		for (String fname : backpacks) {
+    			String name = fname.split(".yml")[0];
+    			if (player.getName().equals(name)) {
+    				playerDat = new File(worldDir, fname);
+    				break;
+    			}
+    		}
+		} else {
+		    Logger.getLogger("Minecraft").severe("Could not find backpack directory " + worldName);
 		}
 
 		try {
