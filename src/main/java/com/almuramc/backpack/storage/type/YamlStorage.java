@@ -108,6 +108,7 @@ public class YamlStorage extends Storage {
 	private BackpackInventory loadFromFile(Player player, String worldName) {
 		File worldDir = new File(STORAGE_DIR, worldName);
 		File playerDat = null;
+		System.out.println("DEBUG: worldName [" + worldName + "]");
 		for (String fname : worldDir.list(new BackpackFilter())) {
 			String name = fname.split(".yml")[0];
 			if (player.getName().equals(name)) {
