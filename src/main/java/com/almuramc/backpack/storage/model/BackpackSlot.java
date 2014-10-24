@@ -37,6 +37,7 @@ public class BackpackSlot
 {
     @Id
     long id;
+    @Column(nullable = false)
     private int slotNumber;
     @Column(columnDefinition = "TEXT")
     String itemStackString;
