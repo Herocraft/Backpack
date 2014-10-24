@@ -30,9 +30,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "bp_slot")
+@Table(name = "bp_slot", uniqueConstraints = @UniqueConstraint(columnNames = { "backpack_id", "slot_number"}))
 public class BackpackSlot
 {
     @Id
