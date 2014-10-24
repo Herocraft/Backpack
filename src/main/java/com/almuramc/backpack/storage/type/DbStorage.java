@@ -261,7 +261,7 @@ public class DbStorage extends Storage
                                 String stackString = null;
 
                                 try {
-                                    StreamSerializer.getDefault().serializeItemStack(stack);
+                                    stackString = StreamSerializer.getDefault().serializeItemStack(stack);
                                 }
                                 catch (IOException e) {
                                     Logger.getLogger("Minecraft").severe("Error serializing item stack for " + playerName + ": " + e.getMessage());
