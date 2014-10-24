@@ -35,16 +35,17 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "bp_inventory")
+@Table(name = "bp_inventory", uniqueConstraints = { @UniqueConstraint(columnNames = { "uuid", "world_name" }) })
 public class Backpack
 {
     @Id
     long id;
     @Column(nullable = false)
     private String playerName;
-    @Column(unique = true)
+    @Column(nullable = false)
     private UUID uuid;
     @Column(nullable = false)
     private String worldName;
