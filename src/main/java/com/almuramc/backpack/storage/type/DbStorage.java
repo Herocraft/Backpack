@@ -206,6 +206,7 @@ public class DbStorage extends Storage
             });
 
             final UUIDFetcher fetcher = new UUIDFetcher(playerNames);
+            final String worldName = worldDir.getName();
 
             Bukkit.getScheduler().runTaskAsynchronously(BackpackPlugin.getInstance(), new Runnable() {
                 
@@ -235,14 +236,14 @@ public class DbStorage extends Storage
                         }
 
                         String playerName = playerFile.getName().split(".yml")[0];
-                        String worldName = PermissionHelper.getParentWorld(worldDir.getName());
+                        String parentWorld = PermissionHelper.getParentWorld(worldName);
                         Backpack backpack = database.find(Backpack.class).where().eq("uuid", uuidMap.get(playerName)).eq("world_name", worldName).findUnique();
 
                         if (backpack == null) {
                             backpack = database.createEntityBean(Backpack.class);
                             backpack.setPlayerName(playerName);
                             backpack.setUuid(uuidMap.get(playerName));
-                            backpack.setWorldName(worldName);
+                            backpack.setWorldName(parentWorld);
                             backpack.setContentAmount(playerYaml.getInt("contents-amount"));
 
                             List<BackpackSlot> slots = new ArrayList<BackpackSlot>();

@@ -85,8 +85,7 @@ public class PermissionHelper {
 		/**
 		 * None of the above conditions checked out, lets see if it is a child
 		 */
-		String w = getParentWorld(worldName);
-		return w == null ? worldName : w;
+		return getParentWorld(worldName);
 	}
 
 	public static String getParentWorld(String worldName) {
@@ -104,6 +103,6 @@ public class PermissionHelper {
                 break;
             }
         }
-        return w;
+        return w == null ? worldName : w;
 	}
 }
