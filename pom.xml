@@ -62,6 +62,12 @@
 			<version>${bukkitVersion}</version>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>${bukkitVersion}</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.spoutcraft</groupId>
 			<artifactId>spoutcraftplugin</artifactId>

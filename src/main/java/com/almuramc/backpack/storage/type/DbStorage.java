@@ -50,7 +50,7 @@ import com.almuramc.backpack.storage.model.BackpackSlot;
 import com.almuramc.backpack.util.PermissionHelper;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.TxRunnable;
-import com.comphenix.protocol.utility.StreamSerializer;
+import com.comphenix.ItemStackSerializer;
 import com.evilmidget38.UUIDFetcher;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -91,7 +91,7 @@ public class DbStorage extends Storage
                         continue;
                     }
                     try {
-                        ItemStack stack = StreamSerializer.getDefault().deserializeItemStack(slot.getItemStackString());
+                        ItemStack stack = ItemStackSerializer.deserialize(slot.getItemStackString());
                         items[slot.getSlotNumber()] = stack;
                     }
                     catch (Exception e) {
@@ -152,7 +152,7 @@ public class DbStorage extends Storage
                     try {
                         BackpackSlot slot = database.createEntityBean(BackpackSlot.class);
                         slot.setSlotNumber(i);
-                        slot.setItemStackString(StreamSerializer.getDefault().serializeItemStack(stack));
+                        slot.setItemStackString(ItemStackSerializer.serialize(stack));
                         slots.add(slot);
                     }
                     catch (Exception e) {
@@ -261,9 +261,9 @@ public class DbStorage extends Storage
                                 String stackString = null;
 
                                 try {
-                                    stackString = StreamSerializer.getDefault().serializeItemStack(stack);
+                                    stackString = ItemStackSerializer.serialize(stack);
                                 }
-                                catch (IOException e) {
+                                catch (Exception e) {
                                     Logger.getLogger("Minecraft").severe("Error serializing item stack for " + playerName + ": " + e.getMessage());
                                     continue;
                                 }
