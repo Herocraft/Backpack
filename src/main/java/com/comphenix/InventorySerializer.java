@@ -59,7 +59,6 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 
-// For 1.7.9
 public class InventorySerializer {
     // Current serialization version - we will use this to handle compatiblity
     private static final int VERSION = 1;

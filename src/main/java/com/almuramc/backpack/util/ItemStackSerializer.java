@@ -24,11 +24,13 @@
  * <http://www.gnu.org/licenses/> for the GNU General Public License and
  * the GNU Lesser Public License.
  */
-package com.comphenix;
+package com.almuramc.backpack.util;
 
 import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftInventoryCustom;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import com.comphenix.InventorySerializer;
 
 public class ItemStackSerializer {
     
