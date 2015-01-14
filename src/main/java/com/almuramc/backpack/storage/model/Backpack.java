@@ -47,7 +47,7 @@ public class Backpack
     @Column(nullable = false)
     private String worldName;
     private int contentAmount;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String inventory;
 
     public long getId()
