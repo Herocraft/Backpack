@@ -28,8 +28,6 @@ package com.almuramc.backpack.storage.type;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,17 +38,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.almuramc.backpack.BackpackPlugin;
 import com.almuramc.backpack.inventory.BackpackInventory;
 import com.almuramc.backpack.storage.Storage;
 import com.almuramc.backpack.storage.model.Backpack;
-import com.almuramc.backpack.storage.model.BackpackSlot;
-import com.almuramc.backpack.util.ItemStackSerializer;
 import com.almuramc.backpack.util.PermissionHelper;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.TxRunnable;
+import com.comphenix.InventorySerializer;
 import com.evilmidget38.UUIDFetcher;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -83,24 +81,7 @@ public class DbStorage extends Storage
             Backpack backpack = database.find(Backpack.class).where().eq("uuid", player.getUniqueId()).eq("world_name", worldName).findUnique();
 
             if (backpack != null) {
-                int size = Math.min(psize, backpack.getContentAmount());
-                ItemStack[] items = new ItemStack[size];
-
-                for (BackpackSlot slot : backpack.getSlots()) {
-                    if (slot.getSlotNumber() >= size) {
-                        continue;
-                    }
-                    try {
-                        ItemStack stack = ItemStackSerializer.deserialize(slot.getItemStackString());
-                        items[slot.getSlotNumber()] = stack;
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                inventory = new BackpackInventory(Bukkit.createInventory(player, size, "Backpack"));
-                inventory.setContents(items);
+                inventory = new BackpackInventory(InventorySerializer.fromBase64(backpack.getInventory()));
             }
             else {
                 inventory = new BackpackInventory(Bukkit.createInventory(player, psize, "Backpack"));
@@ -137,29 +118,8 @@ public class DbStorage extends Storage
                     backpack.setUuid(player.getUniqueId());
                     backpack.setWorldName(worldName);
                 }
-                else {
-                    database.delete(backpack.getSlots());
-                }
                 backpack.setContentAmount(inventory.getSize());
-
-                List<BackpackSlot> slots = new ArrayList<BackpackSlot>();
-                ItemStack[] contents = inventory.getContents();
-                for (int i = 0; i < 54 && i < contents.length; i++) {
-                    final ItemStack stack = contents[i];
-                    if (stack == null) {
-                        continue;
-                    }
-                    try {
-                        BackpackSlot slot = database.createEntityBean(BackpackSlot.class);
-                        slot.setSlotNumber(i);
-                        slot.setItemStackString(ItemStackSerializer.serialize(stack));
-                        slots.add(slot);
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                backpack.setSlots(slots);
+                backpack.setInventory(InventorySerializer.toBase64(inventory));
                 database.save(backpack);
             }
         });
@@ -174,7 +134,8 @@ public class DbStorage extends Storage
     }
 
     @Override
-    public void purge(Player player, String worldName) {
+    public void purge(Player player, String worldName)
+    {
         if (has(player, worldName)) {
             BACKPACKS.get(worldName).remove(player.getUniqueId());
         }
@@ -188,7 +149,7 @@ public class DbStorage extends Storage
 
         for (final File worldDir : worldDirs) {
             final File[] playerFiles = worldDir.listFiles(new FilenameFilter() {
-                
+
                 @Override
                 public boolean accept(File dir, String name)
                 {
@@ -209,7 +170,7 @@ public class DbStorage extends Storage
             final String worldName = worldDir.getName();
 
             Bukkit.getScheduler().runTaskAsynchronously(BackpackPlugin.getInstance(), new Runnable() {
-                
+
                 @Override
                 public void run()
                 {
@@ -246,35 +207,21 @@ public class DbStorage extends Storage
                             backpack.setWorldName(parentWorld);
                             backpack.setContentAmount(playerYaml.getInt("contents-amount"));
 
-                            List<BackpackSlot> slots = new ArrayList<BackpackSlot>();
                             ConfigurationSection backpackSection = playerYaml.getConfigurationSection("backpack");
                             Set<String> slotKeys = backpackSection.getKeys(false);
                             String[] contents = slotKeys.toArray(new String[slotKeys.size()]);
 
+                            Inventory inventory = Bukkit.createInventory(null, contents.length, "Backpack");
                             for (int i = 0; i < 54 && i < contents.length; i++) {
                                 final ConfigurationSection section = backpackSection.getConfigurationSection(contents[i]);
                                 ItemStack stack = section.getItemStack("ItemStack", null);
                                 if (stack == null) {
                                     continue;
                                 }
-
-                                String stackString = null;
-
-                                try {
-                                    stackString = ItemStackSerializer.serialize(stack);
-                                }
-                                catch (Exception e) {
-                                    Logger.getLogger("Minecraft").severe("Error serializing item stack for " + playerName + ": " + e.getMessage());
-                                    continue;
-                                }
-
-                                BackpackSlot slot = database.createEntityBean(BackpackSlot.class);
-                                slot.setSlotNumber(i);
-                                slot.setItemStackString(stackString);
-                                slots.add(slot);
+                                inventory.addItem(stack);
                             }
 
-                            backpack.setSlots(slots);
+                            backpack.setInventory(InventorySerializer.toBase64(inventory));
                             database.save(backpack);
                             Logger.getLogger("Minecraft").info("Migration of " + playerFile.getName() + " OK");
                         }

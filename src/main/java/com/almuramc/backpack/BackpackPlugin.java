@@ -30,19 +30,18 @@ import java.util.List;
 
 import javax.persistence.PersistenceException;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import com.almuramc.backpack.command.BackpackCommands;
 import com.almuramc.backpack.listener.BackpackListener;
 import com.almuramc.backpack.storage.Storage;
 import com.almuramc.backpack.storage.model.Backpack;
-import com.almuramc.backpack.storage.model.BackpackSlot;
 import com.almuramc.backpack.storage.type.DbStorage;
 import com.almuramc.backpack.storage.type.YamlStorage;
 import com.almuramc.backpack.util.CachedConfiguration;
 import com.almuramc.backpack.util.Dependency;
 import com.almuramc.backpack.util.SafeSpout;
-
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class BackpackPlugin extends JavaPlugin {
 	private static BackpackPlugin instance;
@@ -83,7 +82,7 @@ public class BackpackPlugin extends JavaPlugin {
     private void initDb()
     {
         try {
-            this.getDatabase().find(BackpackSlot.class).findRowCount();
+            this.getDatabase().find(Backpack.class).findRowCount();
         }
         catch (PersistenceException e) {
             this.installDDL();
@@ -104,7 +103,6 @@ public class BackpackPlugin extends JavaPlugin {
     {
         List<Class<?>> classes = super.getDatabaseClasses();
         classes.add(Backpack.class);
-        classes.add(BackpackSlot.class);
         return classes;
     }
 

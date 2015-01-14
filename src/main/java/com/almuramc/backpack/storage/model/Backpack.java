@@ -26,14 +26,11 @@
  */
 package com.almuramc.backpack.storage.model;
 
-import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -50,8 +47,8 @@ public class Backpack
     @Column(nullable = false)
     private String worldName;
     private int contentAmount;
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<BackpackSlot> slots;
+    @Column(nullable = false)
+    private String inventory;
 
     public long getId()
     {
@@ -103,14 +100,14 @@ public class Backpack
         this.contentAmount = contentAmount;
     }
 
-    public List<BackpackSlot> getSlots()
+    public String getInventory()
     {
-        return slots;
+        return inventory;
     }
 
-    public void setSlots(List<BackpackSlot> slots)
+    public void setInventory(String inventory)
     {
-        this.slots = slots;
+        this.inventory = inventory;
     }
 
 }
