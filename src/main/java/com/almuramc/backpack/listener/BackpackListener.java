@@ -26,21 +26,11 @@
  */
 package com.almuramc.backpack.listener;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-
 import com.almuramc.backpack.BackpackPlugin;
 import com.almuramc.backpack.inventory.BackpackInventory;
 import com.almuramc.backpack.storage.Storage;
-import com.almuramc.backpack.util.CachedConfiguration;
-import com.almuramc.backpack.util.InventoryUtil;
-import com.almuramc.backpack.util.MessageHelper;
-import com.almuramc.backpack.util.PermissionHelper;
-import com.almuramc.backpack.util.SafeSpout;
-
+import com.almuramc.backpack.util.*;
 import net.milkbowl.vault.permission.Permission;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -61,6 +51,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class BackpackListener implements Listener {
 	private static final BackpackPlugin plugin = BackpackPlugin.getInstance();
