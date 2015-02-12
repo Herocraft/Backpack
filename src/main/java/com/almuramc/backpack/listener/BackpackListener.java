@@ -191,6 +191,7 @@ public class BackpackListener implements Listener {
 			return;
 		}
 		inventory.addItem(item);
+		final Map<Integer, ItemStack> nonMergable = inventory.addItem(item);
 		STORE.save(player, world, inventory);
 		event.getItem().remove();
 		Random random = new Random();
