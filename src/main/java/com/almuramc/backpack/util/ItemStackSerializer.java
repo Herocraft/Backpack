@@ -26,7 +26,7 @@
  */
 package com.almuramc.backpack.util;
 
-import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftInventoryCustom;
+import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftInventoryCustom;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 

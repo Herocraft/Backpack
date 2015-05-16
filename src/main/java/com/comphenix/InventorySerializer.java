@@ -38,16 +38,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
-import net.minecraft.server.v1_8_R1.NBTBase;
-import net.minecraft.server.v1_8_R1.NBTCompressedStreamTools;
-import net.minecraft.server.v1_8_R1.NBTReadLimiter;
-import net.minecraft.server.v1_8_R1.NBTTagCompound;
-import net.minecraft.server.v1_8_R1.NBTTagList;
+import net.minecraft.server.v1_8_R2.NBTBase;
+import net.minecraft.server.v1_8_R2.NBTCompressedStreamTools;
+import net.minecraft.server.v1_8_R2.NBTReadLimiter;
+import net.minecraft.server.v1_8_R2.NBTTagCompound;
+import net.minecraft.server.v1_8_R2.NBTTagList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftInventoryCustom;
-import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftInventoryCustom;
+import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftItemStack;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -101,7 +101,7 @@ public class InventorySerializer {
         for (int i = 0; i < size; i++) {
             NBTTagCompound outputObject = new NBTTagCompound();
             CraftItemStack craft = getCraftVersion(inventory.getItem(i));
-            net.minecraft.server.v1_8_R1.ItemStack nmsCopy = CraftItemStack.asNMSCopy(craft);
+            net.minecraft.server.v1_8_R2.ItemStack nmsCopy = CraftItemStack.asNMSCopy(craft);
             
             // Convert the item stack to a NBT compound
             if (nmsCopy != null) {
@@ -141,7 +141,7 @@ public class InventorySerializer {
             
             if (!inputObject.isEmpty()) {
                 inventory.setItem(i, CraftItemStack.asCraftMirror(
-                    net.minecraft.server.v1_8_R1.ItemStack.createStack(inputObject)));
+                    net.minecraft.server.v1_8_R2.ItemStack.createStack(inputObject)));
             }
         }
         // Handle different types
