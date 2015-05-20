@@ -28,6 +28,7 @@ package com.almuramc.backpack.storage.type;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +37,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -48,7 +50,6 @@ import com.almuramc.backpack.storage.model.Backpack;
 import com.almuramc.backpack.util.PermissionHelper;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.TxRunnable;
-import com.comphenix.InventorySerializer;
 import com.evilmidget38.UUIDFetcher;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -79,12 +80,18 @@ public class DbStorage extends Storage
         else {
             int psize = PermissionHelper.getMaxSizeFor(player, worldName);
             Backpack backpack = database.find(Backpack.class).where().eq("uuid", player.getUniqueId()).eq("world_name", worldName).findUnique();
+            inventory = new BackpackInventory(Bukkit.createInventory(player, psize, "Backpack"));
 
             if (backpack != null) {
-                inventory = new BackpackInventory(InventorySerializer.fromBase64(backpack.getInventory()));
-            }
-            else {
-                inventory = new BackpackInventory(Bukkit.createInventory(player, psize, "Backpack"));
+                YamlConfiguration yaml = new YamlConfiguration();
+                try {
+                    yaml.loadFromString(backpack.getInventory());
+                    List<ItemStack> items = (List<ItemStack>) yaml.getList("items");
+                    inventory.setContents(items.toArray(new ItemStack[items.size()]));
+                }
+                catch (InvalidConfigurationException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -119,7 +126,9 @@ public class DbStorage extends Storage
                     backpack.setWorldName(worldName);
                 }
                 backpack.setContentAmount(inventory.getSize());
-                backpack.setInventory(InventorySerializer.toBase64(inventory));
+                YamlConfiguration yaml = new YamlConfiguration();
+                yaml.set("items", Arrays.asList(inventory.getContents()));
+                backpack.setInventory(yaml.saveToString());
                 database.save(backpack);
             }
         });
@@ -221,7 +230,9 @@ public class DbStorage extends Storage
                                 inventory.addItem(stack);
                             }
 
-                            backpack.setInventory(InventorySerializer.toBase64(inventory));
+                            YamlConfiguration yaml = new YamlConfiguration();
+                            yaml.set("items", Arrays.asList(inventory.getContents()));
+                            backpack.setInventory(yaml.saveToString());
                             database.save(backpack);
                             Logger.getLogger("Minecraft").info("Migration of " + playerFile.getName() + " OK");
                         }
