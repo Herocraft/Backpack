@@ -193,7 +193,7 @@ public class BackpackListener implements Listener {
 		    event.getItem().remove();
 		}
 		Random random = new Random();
-		player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+		player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_GENERIC, 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 		event.setCancelled(true);
 	}
 

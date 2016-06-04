@@ -36,6 +36,7 @@ import java.util.ListIterator;
 import com.almuramc.backpack.BackpackPlugin;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -223,6 +224,24 @@ public class BackpackInventory implements Inventory {
 	}
 
 	@Override
+    public Location getLocation()
+    {
+        return inventory.getLocation();
+    }
+
+    @Override
+    public ItemStack[] getStorageContents()
+    {
+        return inventory.getContents();
+    }
+
+    @Override
+    public void setStorageContents(ItemStack[] itemStack) throws IllegalArgumentException
+    {
+        inventory.setStorageContents(itemStack);
+    }
+
+    @Override
 	public ListIterator<ItemStack> iterator() {
 		return inventory.iterator();
 	}
