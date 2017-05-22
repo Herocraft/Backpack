@@ -39,13 +39,9 @@
 			<id>oss-sonatype-repo</id>
 			<url>https://oss.sonatype.org/content/repositories/public/</url>
 		</repository>
-		<repository>
-			<id>vault-repo</id>
-			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
-		</repository>
         <repository>
             <id>heroes-repo</id>
-            <url>http://nexus.theyeticave.net/content/groups/herocraft/</url>
+            <url>http://nexus.hc.to/content/groups/herocraft/</url>
         </repository>
 	</repositories>
 
