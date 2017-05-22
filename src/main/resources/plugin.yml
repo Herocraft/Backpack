@@ -16,7 +16,7 @@ commands:
         usage: /backpack [command] [arguments]
 permissions:
     backpack.admin:
-        description: Gives access to the clear and reload commands.
+        description: Gives access to the clear, edit and reload commands.
         default: op
     backpack.use:
         description: Allows users to access backpack.

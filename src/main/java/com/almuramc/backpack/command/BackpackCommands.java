@@ -67,6 +67,18 @@ public class BackpackCommands implements CommandExecutor {
 					MessageHelper.sendMessage(commandSender, "Insufficient permissions to use backpack!");
 				}
 				return true;
+			} else if (strings.length > 1 && strings[0].equalsIgnoreCase("edit")) {
+			    if (player != null && !PERM.playerHas(player.getWorld().getName(), player, "backpack.admin")) {
+                    MessageHelper.sendMessage(commandSender, "Insufficient permissions to edit backpacks!");
+                    return true;
+			    }
+			    final Player target = Bukkit.getPlayerExact(strings[1]);
+			    if (target == null) {
+                    MessageHelper.sendMessage(commandSender, strings[1] + " is not online!");
+                    return true;
+                }
+                player.openInventory(STORE.load(target, PermissionHelper.getWorldToOpen(target, target.getWorld().getName())).getInventory());
+                return true;
 			} else if (strings.length > 1 && strings[0].equalsIgnoreCase("clear")) {
 				if (player != null && !PERM.playerHas(player.getWorld().getName(), player, "backpack.admin")) {
 					MessageHelper.sendMessage(commandSender, "Insufficient permissions to clear backpacks!");
