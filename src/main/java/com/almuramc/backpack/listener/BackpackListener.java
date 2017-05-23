@@ -33,6 +33,7 @@ import com.almuramc.backpack.util.*;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -56,6 +57,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BackpackListener implements Listener {
 	private static final BackpackPlugin plugin = BackpackPlugin.getInstance();
@@ -63,6 +66,7 @@ public class BackpackListener implements Listener {
 	private static final CachedConfiguration CONFIG = BackpackPlugin.getInstance().getCached();
 	private static final Permission PERM = BackpackPlugin.getInstance().getHooks().getPermissions();
 	private static boolean debug = false;
+	private static Pattern playerNamePattern = Pattern.compile("Backpack \\((.+)\\)");
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
@@ -208,7 +212,7 @@ public class BackpackListener implements Listener {
 			}
 			return;
 		}
-		if (holder.equals(player) && title.equals("Backpack")) {
+		if (holder.equals(player) && title.startsWith("Backpack")) {
 			BackpackInventory backpack = new BackpackInventory(inventory);
 			List<ItemStack> blacklistedItems = backpack.getIllegalItems(CONFIG.getBlacklistedItems());
 			String world = PermissionHelper.getWorldToOpen(player, player.getWorld().getName());
@@ -230,7 +234,9 @@ public class BackpackListener implements Listener {
 			if (debug) {
 				Bukkit.getLogger().warning("[Backpack Debug] - BackpackListener.java - STORE.save method called.");
 			}
-			STORE.save(player, world, new BackpackInventory(backpack.getInventory()));
+			Matcher playerNameMatcher = playerNamePattern.matcher(title);
+			OfflinePlayer offlinePlayer = playerNameMatcher.matches() ? Bukkit.getOfflinePlayer(playerNameMatcher.group(1)) : player;
+		    STORE.save(offlinePlayer, world, new BackpackInventory(backpack.getInventory()));
 		}
 	}
 	

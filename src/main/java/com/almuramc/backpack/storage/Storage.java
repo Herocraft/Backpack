@@ -31,12 +31,13 @@ import java.util.UUID;
 
 import com.almuramc.backpack.inventory.BackpackInventory;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public abstract class Storage {
 	protected static final HashMap<String, HashMap<UUID, BackpackInventory>> BACKPACKS = new HashMap<String, HashMap<UUID, BackpackInventory>>();
 
-	public final void store(Player player, String worldName, BackpackInventory toStore) {
+	public final void store(OfflinePlayer player, String worldName, BackpackInventory toStore) {
 		if (player == null || worldName == null) {
 			return;
 		}
@@ -53,7 +54,7 @@ public abstract class Storage {
 		BACKPACKS.put(worldName, playerMap);
 	}
 
-	public final BackpackInventory fetch(Player player, String worldName) {
+	public final BackpackInventory fetch(OfflinePlayer player, String worldName) {
 		if (player == null || worldName == null) {
 			return null;
 		}
@@ -72,7 +73,7 @@ public abstract class Storage {
 		return BACKPACKS.get(worldName) != null;
 	}
 
-	public final boolean has(Player player, String worldName) {
+	public final boolean has(OfflinePlayer player, String worldName) {
 		HashMap<UUID, BackpackInventory> map = BACKPACKS.get(worldName);
 		return map != null && map.get(player.getUniqueId()) != null;
 	}
@@ -81,7 +82,9 @@ public abstract class Storage {
 
 	public abstract BackpackInventory load(Player player, String worldName);
 
-	public abstract void save(Player player, String worldName, BackpackInventory backpack);
+	public abstract BackpackInventory edit(Player player, OfflinePlayer target, String worldName);
+
+	public abstract void save(OfflinePlayer player, String worldName, BackpackInventory backpack);
 
 	public abstract void purge(Player player, String worldName);
 

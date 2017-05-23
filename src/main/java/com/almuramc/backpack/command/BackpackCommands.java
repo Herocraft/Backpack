@@ -40,6 +40,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -72,12 +73,12 @@ public class BackpackCommands implements CommandExecutor {
                     MessageHelper.sendMessage(commandSender, "Insufficient permissions to edit backpacks!");
                     return true;
 			    }
-			    final Player target = Bukkit.getPlayerExact(strings[1]);
-			    if (target == null) {
-                    MessageHelper.sendMessage(commandSender, strings[1] + " is not online!");
+			    final OfflinePlayer target = Bukkit.getOfflinePlayer(strings[1]);
+			    if (!target.hasPlayedBefore()) {
+                    MessageHelper.sendMessage(commandSender, strings[1] + " has not played before!");
                     return true;
                 }
-                player.openInventory(STORE.load(target, PermissionHelper.getWorldToOpen(target, target.getWorld().getName())).getInventory());
+                player.openInventory(STORE.edit(player, target, PermissionHelper.getWorldToOpen(target, player.getWorld().getName())).getInventory());
                 return true;
 			} else if (strings.length > 1 && strings[0].equalsIgnoreCase("clear")) {
 				if (player != null && !PERM.playerHas(player.getWorld().getName(), player, "backpack.admin")) {

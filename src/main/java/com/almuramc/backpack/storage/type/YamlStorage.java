@@ -38,6 +38,7 @@ import com.almuramc.backpack.storage.Storage;
 import com.almuramc.backpack.util.PermissionHelper;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -74,13 +75,24 @@ public class YamlStorage extends Storage {
 		if (has(player, worldName)) {
 			backpack = fetch(player, worldName);
 		} else {
-			backpack = loadFromFile(player, worldName);
+			backpack = loadFromFile(player, player, worldName, "Backpack");
 		}
 		return backpack;
 	}
 
 	@Override
-	public void save(Player player, String worldName, BackpackInventory backpack) {
+	public BackpackInventory edit(Player player, OfflinePlayer target, String worldName) {
+        BackpackInventory backpack;
+        if (has(player, worldName)) {
+            backpack = fetch(player, worldName);
+        } else {
+            backpack = loadFromFile(player, player, worldName, String.format("Backpack (%s)", target.getName()));
+        }
+        return backpack;
+	}
+
+	@Override
+	public void save(OfflinePlayer player, String worldName, BackpackInventory backpack) {
 		//Store this backpack to memory
 		store(player, worldName, backpack);
 		//Save to file
@@ -106,14 +118,14 @@ public class YamlStorage extends Storage {
 		}
 	}
 
-	private BackpackInventory loadFromFile(Player player, String worldName) {
+	private BackpackInventory loadFromFile(Player player, OfflinePlayer target, String worldName, String backpackName) {
 		File worldDir = new File(STORAGE_DIR, worldName);
 		File playerDat = null;
 		String[] backpacks = worldDir.list(new BackpackFilter());
 		if (backpacks != null) {
     		for (String fname : backpacks) {
     			String name = fname.split(".yml")[0];
-    			if (player.getName().equals(name)) {
+    			if (target.getName().equals(name)) {
     				playerDat = new File(worldDir, fname);
     				break;
     			}
@@ -128,7 +140,7 @@ public class YamlStorage extends Storage {
 			ConfigurationSection parent = READER.getConfigurationSection("backpack");
 			Set<String> temp = parent.getKeys(false);
 			String[] keys = temp.toArray(new String[temp.size()]);
-			int psize = PermissionHelper.getMaxSizeFor(player, worldName);
+			int psize = PermissionHelper.getMaxSizeFor(target, worldName);
 			int size = READER.getInt("contents-amount", BackpackPlugin.getInstance().getCached().getDefaultSize());
 			if (size > psize) {
 				size = psize;
@@ -142,7 +154,7 @@ public class YamlStorage extends Storage {
 					items.add(stack);
 				}
 			}
-			BackpackInventory backpack = new BackpackInventory(Bukkit.createInventory(player, size, "Backpack"));
+			BackpackInventory backpack = new BackpackInventory(Bukkit.createInventory(player, size, backpackName));
 			backpack.setContents(items.toArray(new ItemStack[items.size()]));
 			return backpack;
 		} catch (Exception e) {
@@ -150,7 +162,7 @@ public class YamlStorage extends Storage {
 		}
 	}
 
-	private void saveToFile(Player player, String worldName, BackpackInventory backpack) {
+	private void saveToFile(OfflinePlayer player, String worldName, BackpackInventory backpack) {
 		File playerBackpack = new File(STORAGE_DIR + File.separator + worldName, player.getName() + ".yml");
 		try {
 			if (!playerBackpack.exists()) {

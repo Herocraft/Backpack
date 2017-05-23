@@ -31,6 +31,7 @@ import java.util.List;
 
 import com.almuramc.backpack.BackpackPlugin;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -52,7 +53,7 @@ public class PermissionHelper {
 	 * @param player
 	 * @return
 	 */
-	public static int getMaxSizeFor(Player player, String worldName) {
+	public static int getMaxSizeFor(OfflinePlayer player, String worldName) {
 		String found;
 		int size = -1;
 		for (String perm : BACKPACK_SIZE_PERMS) {
@@ -71,7 +72,7 @@ public class PermissionHelper {
 		return size;
 	}
 
-	public static String getWorldToOpen(Player player, String worldName) {
+	public static String getWorldToOpen(OfflinePlayer player, String worldName) {
 		HashMap<String, List<String>> shares = BackpackPlugin.getInstance().getCached().getShareEntries();
 		/**
 		 * Shares has no entries

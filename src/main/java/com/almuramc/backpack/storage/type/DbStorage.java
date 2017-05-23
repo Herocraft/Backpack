@@ -36,6 +36,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -72,15 +73,26 @@ public class DbStorage extends Storage
     @Override
     public BackpackInventory load(Player player, String worldName)
     {
+        return load(player, player, worldName, "Backpack");
+    }
+
+    @Override
+    public BackpackInventory edit(Player player, OfflinePlayer target, String worldName)
+    {
+        return load(player, target, worldName, String.format("Backpack (%s)", target.getName()));
+    }
+
+    private BackpackInventory load(Player player, OfflinePlayer target, String worldName, String backpackName)
+    {
         BackpackInventory inventory;
 
-        if (has(player, worldName)) {
-            inventory = fetch(player, worldName);
+        if (has(target, worldName)) {
+            inventory = fetch(target, worldName);
         }
         else {
-            int psize = PermissionHelper.getMaxSizeFor(player, worldName);
-            Backpack backpack = database.find(Backpack.class).where().eq("uuid", player.getUniqueId()).eq("world_name", worldName).findUnique();
-            inventory = new BackpackInventory(Bukkit.createInventory(player, psize, "Backpack"));
+            int psize = PermissionHelper.getMaxSizeFor(target, worldName);
+            Backpack backpack = database.find(Backpack.class).where().eq("uuid", target.getUniqueId()).eq("world_name", worldName).findUnique();
+            inventory = new BackpackInventory(Bukkit.createInventory(player, psize, backpackName));
 
             if (backpack != null) {
                 YamlConfiguration yaml = new YamlConfiguration();
@@ -99,7 +111,7 @@ public class DbStorage extends Storage
     }
 
     @Override
-    public void save(Player player, String worldName, BackpackInventory inventory)
+    public void save(OfflinePlayer player, String worldName, BackpackInventory inventory)
     {
         // Store this backpack to memory
         store(player, worldName, inventory);
@@ -111,7 +123,7 @@ public class DbStorage extends Storage
         saveToDb(player, worldName, inventory);
     }
 
-    public void saveToDb(final Player player, final String worldName, final BackpackInventory inventory)
+    public void saveToDb(final OfflinePlayer player, final String worldName, final BackpackInventory inventory)
     {
         database.execute(new TxRunnable() {
 
