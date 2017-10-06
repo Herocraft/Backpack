@@ -22,6 +22,12 @@ general:
   use-saveonlogin: false
 storage:
   type: yaml
+database:
+  username: bukkit
+  isolation: SERIALIZABLE
+  driver: org.sqlite.JDBC
+  password: walrus
+  url: jdbc:sqlite:{DIR}{NAME}.db
 admin:
   control-panel: false
   hotkey: KEY_V

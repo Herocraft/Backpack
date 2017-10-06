@@ -31,7 +31,6 @@ import java.util.List;
 import javax.persistence.PersistenceException;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import com.almuramc.backpack.command.BackpackCommands;
 import com.almuramc.backpack.listener.BackpackListener;
@@ -43,7 +42,7 @@ import com.almuramc.backpack.util.CachedConfiguration;
 import com.almuramc.backpack.util.Dependency;
 import com.almuramc.backpack.util.SafeSpout;
 
-public class BackpackPlugin extends JavaPlugin {
+public class BackpackPlugin extends EbeanJavaPlugin implements EbeanPlugin {
 	private static BackpackPlugin instance;
 	private static Storage store;
 	private static CachedConfiguration cached;
